@@ -1,0 +1,10 @@
+# On clone notre fork
+git clone https://github.com/NexusSecOps/eval-quiz-app.git
+# On créer la branche de Dev pour mettre en commun notre organisation et pouvoir assure la livraison sans casser main. et sans ce marcher sur les pieds.
+git branch Dev
+# On passe sur notre banche de Dev
+git checkout Dev
+# On publie la nouvelle source de vériter pour le travail commun
+git push --set-upstream origin Dev
+# Nous avons demander a claude de répartire les taches pars jalon pour créer le REPARTION.md, ensuite on l'envoi en branche Dev pour que les collègues puissent récupérer les informations. j'ai utiliser git add . car 1 fichier a modifier, et donc plus rapide, sinon il aurais fallu utiliser .\<nom du fichier>, aussi étant sous linux j'utilise && pour enchainer les commandes, mais l'alternative sur powershell est ";" a la place des "&&"
+git add . && git commit -m "Plan de répartition des tâches" && git push
