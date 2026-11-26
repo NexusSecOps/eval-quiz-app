@@ -54,3 +54,6 @@ Elyes peut avancer sans attendre : J0, création du groupe de ressources et de l
 - Les PR visent `main` **de notre fork**, jamais le dépôt du formateur.
 - Le formateur peut demander à chacun une modification ou un diagnostic en direct, sans IA, sur n'importe quelle partie.
 - Répartition modifiable : la mettre à jour ici au fil du projet.
+
+
+elyes
