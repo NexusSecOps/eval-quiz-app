@@ -1,0 +1,3 @@
+Nom                 Serveur                        Sku    Region         Admin
+------------------  -----------------------------  -----  -------------  -------
+acrquiznexussecops  acrquiznexussecops.azurecr.io  Basic  francecentral  False
