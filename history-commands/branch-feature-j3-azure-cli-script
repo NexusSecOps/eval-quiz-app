@@ -1,0 +1,23 @@
+# On créer la nouvelle branche pour J3 et on se met dessus.
+git checkout -b feature/j3-azure-cli-script
+# On vérifie la connexion à l'abonnement, sans afficher son identifiant.
+az account show --query "{nom:name, etat:state}" -o table
+# On lit la policy de l'abonnement étudiant : elle limite les régions autorisées à 5.
+az policy assignment list --query "[].{nom:displayName, params:parameters}" -o json
+# On vérifie que les fournisseurs nécessaires sont enregistrés : Container Apps, ACR, Log Analytics.
+az provider show -n Microsoft.App --query "registrationState" -o tsv
+az provider show -n Microsoft.ContainerRegistry --query "registrationState" -o tsv
+az provider show -n Microsoft.OperationalInsights --query "registrationState" -o tsv
+# On croise les régions autorisées avec celles qui proposent Container Apps et ACR : denmarkeast n'a pas Container Apps.
+az provider show -n Microsoft.App --query "resourceTypes[?resourceType=='managedEnvironments'].locations[]" -o tsv
+az provider show -n Microsoft.ContainerRegistry --query "resourceTypes[?resourceType=='registries'].locations[]" -o tsv
+# On regarde les tailles disponibles et les quotas Container Apps par région.
+az containerapp env workload-profile list-supported -l francecentral -o table
+az containerapp list-usages -l francecentral -o table
+# On vérifie que le nom du registre est libre dans tout Azure.
+az acr check-name --name acrquiznexussecops --query nameAvailable -o tsv
+# On rend les scripts exécutables, Git garde cette information.
+git update-index --chmod=+x scripts/*.sh
+# Création des ressources puis envoi des images.
+./scripts/acr-create.sh
+./scripts/acr-push.sh
