@@ -12,7 +12,9 @@ RUN npm run build
 
 # Etape 2 : image finale, uniquement Nginx et les fichiers statiques.
 # Node et les sources ne sont pas dans l'image finale, elle est donc plus petite et plus sûre.
-FROM nginx:1.27-alpine
+# Version 1.31 : la 1.27 repose sur Alpine 3.21, qui n'est plus supporté
+# (3 CRITICAL et 67 HIGH, voir preuves/J2/avant-eval-quiz-app-frontend.txt).
+FROM nginx:1.31-alpine
 
 # Les fichiers du dossier templates sont traités au démarrage par l'image Nginx :
 # les variables d'environnement définies (BACKEND_HOST, BACKEND_PORT) y sont remplacées.

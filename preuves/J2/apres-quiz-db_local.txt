@@ -1,0 +1,16 @@
+Date : 2026-11-26T11:14:44Z
+Trivy : aquasec/trivy:0.76.2
+Image : quiz-db:local
+
+
+Report Summary
+
+┌───────────────────────────────┬────────┬─────────────────┬─────────┐
+│            Target             │  Type  │ Vulnerabilities │ Secrets │
+├───────────────────────────────┼────────┼─────────────────┼─────────┤
+│ quiz-db:local (alpine 3.24.4) │ alpine │        0        │    -    │
+└───────────────────────────────┴────────┴─────────────────┴─────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
