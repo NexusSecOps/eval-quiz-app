@@ -7,10 +7,10 @@
 
 | Jalon | Intitulé | Responsable | Relecteur | Preuves à produire | Dépend de | Statut |
 |---|---|---|---|---|---|---|
-| **J0** | Vérification préalable du compte Azure (quotas, région, droits ACR / Container Apps) **et possibilité de créer une identité de service pour GitHub Actions** (sinon le CD J6-B est bloqué) | Elyes | Nicolas | Sortie `az` non sensible, blocages signalés au formateur | n/a | À faire |
-| **J1** | Conteneurisation locale : Dockerfiles, `docker-compose.yml`, `.env.example`, persistance du volume, schéma d'architecture locale. **Nginx : upstream backend configurable** (pas de `backend:3007` codé en dur, voir notes) | Nicolas | Elyes | Dockerfiles, Compose, logs expurgés, captures, explication du volume, schéma | n/a | À faire |
-| **J2** | Sécurité des images : scan Trivy initial, corrections, second scan | Nicolas | Elyes | Rapport avant/après, commandes, vulnérabilités résiduelles justifiées | J1 | À faire |
-| **J3** | Azure CLI et ACR : groupe de ressources, registre, push d'images taguées | Elyes | Nicolas | Scripts, sorties non sensibles, images et tags dans l'ACR | J0, J1 | À faire |
+| **J0** | Vérification préalable du compte Azure (quotas, région, droits ACR / Container Apps) **et possibilité de créer une identité de service pour GitHub Actions** (sinon le CD J6-B est bloqué) | Elyes | Nicolas | Sortie `az` non sensible, blocages signalés au formateur | n/a | Fait |
+| **J1** | Conteneurisation locale : Dockerfiles, `docker-compose.yml`, `.env.example`, persistance du volume, schéma d'architecture locale. **Nginx : upstream backend configurable** (pas de `backend:3007` codé en dur, voir notes) | Nicolas | Elyes | Dockerfiles, Compose, logs expurgés, captures, explication du volume, schéma | n/a | Fait |
+| **J2** | Sécurité des images : scan Trivy initial, corrections, second scan | Nicolas | Elyes | Rapport avant/après, commandes, vulnérabilités résiduelles justifiées | J1 | Fait |
+| **J3** | Azure CLI et ACR : groupe de ressources, registre, push d'images taguées | Elyes | Nicolas | Scripts, sorties non sensibles, images et tags dans l'ACR | J0, J1 | Fait |
 | **J4** | Frontend et backend sur Azure Container Apps (ingress, réseau, révisions, `/health`). Le backend exige `RESEND_API_KEY` au démarrage, même factice | Elyes | Nicolas | Config, logs et état des révisions, test `/health` (code HTTP + réponse) ou diagnostic | J3 | À faire |
 | **J5** | PostgreSQL cloud (Neon) : TLS via l'URL de connexion, schéma `init.sql`, inscription et résultat, persistance | Elyes (suggéré : préparable sans images pendant l'attente de J1) | Nicolas | Démo, logs non sensibles, gestion des secrets | J4 | À faire |
 | **J6-A** | CI sur Pull Request : build, Trivy bloquant sur CRITICAL, protection de `main`, approbation | Nicolas | Elyes | URL de PR, runs CI, rapports Trivy, règle de protection active | J1, J2 | À faire |
