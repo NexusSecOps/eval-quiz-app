@@ -1,0 +1,3 @@
+Nom          Region         Etat
+-----------  -------------  ---------
+rg-quiz-app  francecentral  Succeeded
