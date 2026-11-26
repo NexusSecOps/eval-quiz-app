@@ -11,6 +11,11 @@ WORKDIR /app
 COPY package.json ./
 RUN npm install --omit=dev && npm cache clean --force
 
+# npm ne sert qu'à installer les dépendances. On le retire de l'image finale :
+# il embarque ses propres paquets, source de 10 vulnérabilités HIGH
+# (voir preuves/J2/avant-eval-quiz-app-backend.txt), et réduit la surface d'attaque.
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
+
 # Le code vient après les dépendances, pour la même raison de cache.
 COPY server.js ./
 
