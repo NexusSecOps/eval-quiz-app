@@ -16,8 +16,8 @@ az containerapp env workload-profile list-supported -l francecentral -o table
 az containerapp list-usages -l francecentral -o table
 # On vérifie que le nom du registre est libre dans tout Azure.
 az acr check-name --name acrquiznexussecops --query nameAvailable -o tsv
-# On rend les scripts exécutables, Git garde cette information.
-git update-index --chmod=+x scripts/*.sh
+# On ajoute les scripts en les marquant exécutables, Git garde cette information.
+git add --chmod=+x scripts/*.sh
 # Création des ressources puis envoi des images.
 ./scripts/acr-create.sh
 ./scripts/acr-push.sh
