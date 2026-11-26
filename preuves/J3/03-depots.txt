@@ -1,4 +1,4 @@
 Result
---------
-backend
-frontend
+-------------
+quiz-backend
+quiz-frontend
