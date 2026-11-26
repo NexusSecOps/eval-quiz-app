@@ -1,8 +1,5 @@
 # Image de base : Node 22 LTS sur Alpine, légère donc moins de vulnérabilités à corriger.
-# La bonne image : FROM node:22-alpine
-
-# La mauvaise pour tester trivy et la CI
-FROM nginx:1.27-alpine
+FROM node:22-alpine
 
 # Mode production : npm n'installe pas les outils de développement.
 ENV NODE_ENV=production
