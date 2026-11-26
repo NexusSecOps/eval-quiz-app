@@ -1,0 +1,4 @@
+# On créer la nouvelle branche.
+git branch feature/j1-container 
+# On ce met sur la branche de feature.
+git checkout feature/j1-container
