@@ -21,9 +21,11 @@ LOCATION="${LOCATION:-francecentral}"
 # Le suffixe évite une collision avec un autre groupe de la promo.
 ACR_NAME="${ACR_NAME:-acrquiznexussecops}"
 
-# Noms des dépôts d'images dans le registre, alignés sur les services du Compose.
-FRONTEND_IMAGE="${FRONTEND_IMAGE:-frontend}"
-BACKEND_IMAGE="${BACKEND_IMAGE:-backend}"
+# Noms des dépôts d'images dans le registre, identiques aux noms d'images du Compose.
+# En local le tag est "local", dans ACR le tag est le hash du commit.
+# quiz-db n'est pas poussée : en cloud, la base est un PostgreSQL managé chez Neon, voir J5.
+FRONTEND_IMAGE="${FRONTEND_IMAGE:-quiz-frontend}"
+BACKEND_IMAGE="${BACKEND_IMAGE:-quiz-backend}"
 
 # Tag : hash court du commit Git courant.
 # On sait ainsi exactement quel code se trouve dans chaque image, la CI/CD utilisera la même règle.
