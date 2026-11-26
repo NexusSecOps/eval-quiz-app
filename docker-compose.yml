@@ -1,0 +1,79 @@
+# Quiz App : orchestration locale.
+# Trois services : db (PostgreSQL), backend (API Express), frontend (Nginx).
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      # Volume nommé : les données survivent à la recréation des conteneurs.
+      # Seule la commande "down -v" le supprime.
+      - pgdata:/var/lib/postgresql/data
+      # Schéma chargé uniquement si le volume est vide, donc au premier démarrage.
+      # Le suffixe z fait relabéliser le fichier pour SELinux (Fedora, RHEL).
+      # Il est ignoré sans effet sur Windows et Mac.
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro,z
+    healthcheck:
+      # Le double $$ laisse le shell du conteneur lire les variables.
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - db-net
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      PORT: 3007
+      # Le nom d'hôte "db" est le nom du service, résolu par le DNS interne de Docker.
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      # Obligatoire pour que le backend démarre, même avec une valeur factice.
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      FROM_EMAIL: ${FROM_EMAIL}
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      db:
+        # Le backend attend que PostgreSQL réponde vraiment, pas seulement qu'il soit lancé.
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3007/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - frontend-net
+      - db-net
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      BACKEND_HOST: backend
+      BACKEND_PORT: 3007
+    ports:
+      # Seul point d'entrée publié vers l'hôte : http://localhost:8087
+      - "8087:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - frontend-net
+
+networks:
+  frontend-net:
+  db-net:
+    # Réseau interne : la base n'a aucun accès à Internet ni à l'hôte.
+    internal: true
+
+volumes:
+  pgdata:
