@@ -1,0 +1,84 @@
+# CI : contrôles obligatoires sur les Pull Requests vers Dev et main.
+# Aucun déploiement ici : il se trouve dans cd.yml, après fusion dans main.
+name: CI
+
+on:
+  pull_request:
+    branches: [Dev, main]
+
+# Droits minimaux : le workflow lit seulement le code.
+# Aucun secret n'est utilisé, une PR ne peut donc rien exposer.
+permissions:
+  contents: read
+
+# Une nouvelle poussée sur la même PR annule l'exécution précédente.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Contrôle 1 : les images se construisent et la stack démarre.
+  build-test:
+    name: Build et test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # .env.example ne contient que des valeurs fictives : il suffit pour la CI.
+      - name: Préparation de la configuration
+        run: cp .env.example .env
+
+      - name: Validation du Compose
+        run: docker compose config --quiet
+
+      - name: Construction des images
+        run: docker compose build
+
+      # --wait attend que les services avec healthcheck soient sains.
+      - name: Démarrage de la stack
+        run: docker compose up -d --wait --wait-timeout 120
+
+      - name: Test de santé via Nginx
+        run: curl --fail --silent --show-error http://localhost:8087/health | grep '"status":"ok"'
+
+      # En cas d'échec, les logs des conteneurs aident au diagnostic.
+      - name: Logs en cas d'échec
+        if: failure()
+        run: docker compose logs
+
+      - name: Arrêt de la stack
+        if: always()
+        run: docker compose down -v
+
+  # Contrôle 2 : scan Trivy des images construites, bloquant sur CRITICAL.
+  trivy:
+    name: Scan Trivy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Préparation de la configuration
+        run: cp .env.example .env
+
+      - name: Construction des images
+        run: docker compose build
+
+      # Même script qu'en local : une CRITICAL fait échouer l'étape, donc le job.
+      # Pas de continue-on-error : le contrôle est bloquant.
+      - name: Scan Trivy, bloquant sur CRITICAL
+        run: ./scripts/trivy-scan.sh ci
+        env:
+          OUT_DIR: rapports-trivy
+
+      # Les rapports sont conservés même si le scan échoue.
+      - name: Publication des rapports
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: rapports-trivy
+          path: rapports-trivy/
+          retention-days: 30

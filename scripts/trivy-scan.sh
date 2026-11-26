@@ -8,7 +8,7 @@ PHASE="${1:?Usage : $0 avant|apres}"
 
 # Version de Trivy épinglée : même résultat pour tout le monde.
 TRIVY_IMAGE="aquasec/trivy:0.76.2"
-OUT="preuves/J2"
+OUT="${OUT_DIR:-preuves/J2}"
 mkdir -p "$OUT"
 
 # Trivy tourne dans un conteneur : rien à installer sur la machine.
