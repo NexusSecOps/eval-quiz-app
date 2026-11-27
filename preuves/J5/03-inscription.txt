@@ -1,0 +1,9 @@
+Appels via l'URL publique du frontend (Nginx puis backend puis Neon). Données de test.
+
+$ curl -X POST https://quiz-frontend.<domaine>/api/users -d '{"firstname":"TestJ5","email":"test-j5@example.com"}'
+{"id":1,"firstname":"TestJ5","email":"test-j5@example.com"}
+HTTP 201
+
+$ curl -X POST https://quiz-frontend.<domaine>/api/results -d '{"userId":1,"score":1,"totalQuestions":1,"answers":[...1 réponse...]}'
+{"message":"Results saved and email sent","quizResultId":1}
+HTTP 201
