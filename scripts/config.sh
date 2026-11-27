@@ -5,6 +5,11 @@
 # Chaque valeur peut être remplacée par une variable d'environnement,
 # exemple : LOCATION=germanywestcentral ./scripts/acr-create.sh
 
+# Git Bash sous Windows convertit tout argument commençant par "/" en chemin Windows.
+# Les identifiants Azure, de la forme /subscriptions/..., seraient alors cassés.
+# Cette variable désactive la conversion. Sans effet sous Linux, Mac ou dans GitHub Actions.
+export MSYS_NO_PATHCONV=1
+
 # Groupe de ressources qui contient tout le projet.
 # Le supprimer supprime aussi tout ce qu'il contient, voir destroy.sh.
 RESOURCE_GROUP="${RESOURCE_GROUP:-rg-quiz-app}"

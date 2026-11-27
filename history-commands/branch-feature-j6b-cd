@@ -1,0 +1,26 @@
+# La première tentative de branche partait de l'ancien commit J4 : checkout Dev avait échoué à cause d'une ligne vide dans config.sh.
+# On annule cette modification, on met Dev à jour, on supprime les branches locales obsolètes et on recrée la branche J6-B.
+git restore scripts/config.sh
+git checkout Dev
+git pull
+git branch -D feature/j6b-cd feature/j4-container-apps
+git switch -c feature/j6b-cd
+# Vérification : la branche part bien du dernier commit de Dev.
+git log --oneline -1
+# Commit des fichiers J6-B : scripts marqués exécutables, workflow CD et historique.
+git add --chmod=+x scripts/cd-identity-create.sh scripts/aca-update.sh
+git add scripts/config.sh .github/workflows/cd.yml history-commands/branch-feature-j6b-cd
+git commit -m "J6-B : CD après fusion dans main, OIDC, push ACR et mise à jour Container Apps"
+git push -u origin feature/j6b-cd
+# Partie Azure, lancée par Nicolas sur son abonnement : identité OIDC du CD et ses rôles.
+./scripts/cd-identity-create.sh
+# Secrets GitHub : les valeurs passent directement de az à gh, elles ne sont jamais affichées.
+gh secret set AZURE_CLIENT_ID --repo NexusSecOps/eval-quiz-app --body "$(az identity show -g rg-quiz-app -n id-quiz-github-cd --query clientId -o tsv)"
+gh secret set AZURE_TENANT_ID --repo NexusSecOps/eval-quiz-app --body "$(az account show --query tenantId -o tsv)"
+gh secret set AZURE_SUBSCRIPTION_ID --repo NexusSecOps/eval-quiz-app --body "$(az account show --query id -o tsv)"
+gh secret list --repo NexusSecOps/eval-quiz-app
+# Après fusion de la PR Dev vers main : preuves du premier CD, récupérées depuis GitHub.
+git checkout main
+git pull
+mkdir -p preuves/J6-B
+gh run list --repo NexusSecOps/eval-quiz-app --workflow CD --limit 3 | tee preuves/J6-B/01-runs-cd.txt

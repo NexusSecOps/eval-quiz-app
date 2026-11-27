@@ -1,0 +1,105 @@
+# CD : déploiement automatique après fusion dans main.
+# Build, scan Trivy, publication dans l'ACR avec le hash du commit comme tag,
+# puis mise à jour des deux Container Apps : Azure crée une nouvelle révision de chacune.
+# Les PR ne déclenchent jamais ce workflow : elles passent seulement par ci.yml.
+name: CD
+
+on:
+  push:
+    branches: [main]
+  # Lancement manuel depuis l'onglet Actions. Azure n'accepte le jeton que s'il vient de main.
+  workflow_dispatch:
+
+# Droits minimaux :
+# contents: read : lire le code.
+# id-token: write : obtenir le jeton OIDC échangé contre un accès Azure, sans mot de passe.
+permissions:
+  contents: read
+  id-token: write
+
+# Un seul déploiement à la fois. Un déploiement en cours n'est jamais annulé,
+# pour ne pas laisser Azure à moitié mis à jour.
+concurrency:
+  group: cd-main
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build, scan et déploiement
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # .env.example ne contient que des valeurs fictives : il suffit pour construire les images.
+      # .env est ignoré par Git, il ne gêne donc pas le contrôle de acr-push.sh.
+      - name: Préparation de la configuration
+        run: cp .env.example .env
+
+      - name: Construction des images
+        run: docker compose build
+
+      # Contrôle refait avant publication : l'image vient du commit fusionné, pas de celui de la PR.
+      # Rapports dans le dossier temporaire du runner, hors du dépôt :
+      # acr-push.sh refuse de pousser si le dépôt contient des fichiers non commités.
+      - name: Scan Trivy, bloquant sur CRITICAL
+        run: ./scripts/trivy-scan.sh cd
+        env:
+          OUT_DIR: ${{ runner.temp }}/rapports-trivy
+
+      - name: Publication des rapports Trivy
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: rapports-trivy-cd
+          path: ${{ runner.temp }}/rapports-trivy/
+          retention-days: 30
+
+      # Connexion OIDC : GitHub fournit un jeton signé, Azure le vérifie grâce à
+      # l'identifiant fédéré de id-quiz-github-cd. Aucun mot de passe n'existe.
+      # Les trois identifiants sont des secrets du dépôt, donc masqués dans les logs.
+      - name: Connexion à Azure
+        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Extension Azure CLI containerapp
+        run: az extension add --name containerapp --upgrade --only-show-errors
+
+      # Même script qu'en local : tag = hash court du commit fusionné.
+      # Les couches sont en cache depuis l'étape de construction, le build est rapide.
+      - name: Publication des images dans l'ACR
+        run: ./scripts/acr-push.sh
+
+      - name: Mise à jour des Container Apps
+        run: ./scripts/aca-update.sh | tee "${{ runner.temp }}/deploiement.txt"
+
+      # Test de bout en bout après déploiement : Internet, Nginx, puis le backend.
+      # Jusqu'à 2 minutes d'attente : la nouvelle révision peut mettre un peu de temps à démarrer.
+      - name: Test de santé après déploiement
+        run: |
+          source scripts/config.sh
+          FQDN="$(az containerapp show -g "${RESOURCE_GROUP}" -n "${FRONTEND_APP}" --query properties.configuration.ingress.fqdn -o tsv)"
+          for essai in $(seq 1 12); do
+            if curl -fsS --max-time 10 "https://${FQDN}/health" | grep -q '"status":"ok"'; then
+              echo "Test de santé réussi, essai ${essai}"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "Le test de santé a échoué après 2 minutes" >&2
+          exit 1
+
+      # Résumé affiché sur la page du run : commit, révisions et images. C'est la preuve J6-B.
+      - name: Résumé du déploiement
+        if: success()
+        run: |
+          {
+            echo "## Déploiement du commit $(git rev-parse --short HEAD)"
+            echo '```'
+            cat "${{ runner.temp }}/deploiement.txt"
+            echo '```'
+          } >> "${GITHUB_STEP_SUMMARY}"
