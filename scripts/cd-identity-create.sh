@@ -31,11 +31,25 @@ fi
 # issuer : l'émetteur des jetons, le service OIDC de GitHub Actions.
 # subject : seul un workflow lancé sur la branche main de notre dépôt est accepté.
 # audience : valeur standard attendue par Azure pour cet échange de jeton.
-SUBJECT="repo:${GITHUB_REPO}:ref:refs/heads/main"
+#
+# Le sujet doit être EXACTEMENT celui que GitHub présente, sinon Azure répond AADSTS700213
+# ("No matching federated identity record"). Depuis 2026, les dépôts récents ont le réglage
+# "use_immutable_subject" : le sujet contient les identifiants numériques du propriétaire et du dépôt,
+# repo:NexusSecOps@<id>/eval-quiz-app@<id>:ref:refs/heads/main, et non plus seulement les noms.
+# On lit donc le préfixe réellement configuré sur le dépôt, avec la commande gh (déjà requise pour les secrets).
+# Sans ce réglage, l'API ne renvoie pas de préfixe et on retombe sur l'ancien format, avec les noms seuls.
+PREFIXE="$(gh api "repos/${GITHUB_REPO}/actions/oidc/customization/sub" --jq '.sub_claim_prefix // empty' 2>/dev/null || true)"
+if [ -n "${PREFIXE}" ]; then
+  NOM_FEDERE="github-main-immutable"
+else
+  PREFIXE="repo:${GITHUB_REPO}"
+  NOM_FEDERE="github-main"
+fi
+SUBJECT="${PREFIXE}:ref:refs/heads/main"
 if [ "$(az identity federated-credential list -g "${RESOURCE_GROUP}" --identity-name "${CD_IDENTITY}" --query "length([?subject=='${SUBJECT}'])" -o tsv)" = "0" ]; then
   echo "Création de l'identifiant fédéré pour ${SUBJECT}"
   az identity federated-credential create \
-    --name github-main \
+    --name "${NOM_FEDERE}" \
     --identity-name "${CD_IDENTITY}" \
     --resource-group "${RESOURCE_GROUP}" \
     --issuer "https://token.actions.githubusercontent.com" \

@@ -1,0 +1,16 @@
+# Identité du CD et règles de confiance (az)
+
+== Identifiants fédérés : seuls des workflows lancés sur main sont acceptés
+Nom                    Sujet                                                                    Audience
+---------------------  -----------------------------------------------------------------------  --------------------------
+github-main            repo:NexusSecOps/eval-quiz-app:ref:refs/heads/main                       api://AzureADTokenExchange
+github-main-immutable  repo:NexusSecOps@361464339/eval-quiz-app@1472868932:ref:refs/heads/main  api://AzureADTokenExchange
+
+== Rôles (portée réduite au dernier élément du chemin)
+AcrPush : acrquiznexusdev
+Contributor : rg-quiz-app
+
+== Secrets du dépôt (noms seulement, valeurs jamais lisibles)
+AZURE_CLIENT_ID
+AZURE_SUBSCRIPTION_ID
+AZURE_TENANT_ID
