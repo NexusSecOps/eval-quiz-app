@@ -1,0 +1,32 @@
+== quiz-backend
+{
+  "cpu": 0.25,
+  "identiteRegistre": true,
+  "image": "acrquiznexusdev.azurecr.io/quiz-backend:ccfe726",
+  "ingress": {
+    "externe": false,
+    "insecure": true,
+    "portCible": 3007
+  },
+  "memoire": "0.5Gi",
+  "replicas": {
+    "max": 2,
+    "min": 1
+  }
+}
+== quiz-frontend
+{
+  "cpu": 0.25,
+  "identiteRegistre": true,
+  "image": "acrquiznexusdev.azurecr.io/quiz-frontend:ccfe726",
+  "ingress": {
+    "externe": true,
+    "insecure": false,
+    "portCible": 80
+  },
+  "memoire": "0.5Gi",
+  "replicas": {
+    "max": 2,
+    "min": 1
+  }
+}

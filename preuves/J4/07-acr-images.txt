@@ -1,0 +1,19 @@
+$ az acr repository show-tags (registre acrquiznexusdev, germanywestcentral)
+== quiz-frontend
+Tag      Digest                                                                   Date
+-------  -----------------------------------------------------------------------  ---------------------------
+ccfe726  sha256:21396c9fd0c226a35380dbc64bfa009d4417bd46d994e7345454986d9f59f7a8  2026-11-27T08:13:00.545634Z
+== quiz-backend
+Tag      Digest                                                                   Date
+-------  -----------------------------------------------------------------------  ----------------------------
+ccfe726  sha256:bb981e0226fc6da2be6c0a898bc94b41f54ecfe7090f940063f5a53454de2e5e  2026-11-27T08:13:05.3374396Z
+
+$ az role assignment list : droits sur le registre
+Role
+-------
+AcrPull
+
+$ az acr show : compte admin
+Admin    Sku    Region
+-------  -----  ------------------
+False    Basic  germanywestcentral

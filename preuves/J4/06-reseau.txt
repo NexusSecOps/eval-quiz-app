@@ -1,0 +1,43 @@
+$ az containerapp env show : environnement
+{
+  "acces_public": "Enabled",
+  "domaine": "calmcliff-e2fd0984.switzerlandnorth.azurecontainerapps.io",
+  "mode": "WorkloadProfiles",
+  "nom": "cae-quiz-app",
+  "profils": [
+    "Consumption"
+  ],
+  "region": "Switzerland North",
+  "vnet": null
+}
+
+$ az containerapp show quiz-frontend : ingress
+{
+  "app": "quiz-frontend",
+  "externe": true,
+  "fqdn": "quiz-frontend.calmcliff-e2fd0984.switzerlandnorth.azurecontainerapps.io",
+  "httpInsecureAutorise": false,
+  "portCible": 80,
+  "transport": "Http",
+  "variablesNginx": [
+    {
+      "nom": "BACKEND_HOST",
+      "valeur": "quiz-backend"
+    },
+    {
+      "nom": "BACKEND_PORT",
+      "valeur": "80"
+    }
+  ]
+}
+
+$ az containerapp show quiz-backend : ingress
+{
+  "app": "quiz-backend",
+  "externe": false,
+  "fqdn": "quiz-backend.internal.calmcliff-e2fd0984.switzerlandnorth.azurecontainerapps.io",
+  "httpInsecureAutorise": true,
+  "portCible": 3007,
+  "transport": "Http",
+  "variablesNginx": []
+}

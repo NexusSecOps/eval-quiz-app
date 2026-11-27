@@ -1,0 +1,22 @@
+== logs quiz-backend
+ Connecting to the container 'quiz-backend'...
+ Successfully Connected to container: 'quiz-backend' [Revision: 'quiz-backend--jll686j', Replica: 'quiz-backend--jll686j-b894568cc-qzbcg']
+stdout F Server running on port 3007
+== logs quiz-frontend
+ Connecting to the container 'quiz-frontend'...
+ Successfully Connected to container: 'quiz-frontend' [Revision: 'quiz-frontend--h7iwahl', Replica: 'quiz-frontend--h7iwahl-545d78d95d-cft8k']
+stderr F 2026/11/27 08:44:22 [notice] 1#1: using the "epoll" event method
+stderr F 2026/11/27 08:44:22 [notice] 1#1: nginx/1.31.10
+stderr F 2026/11/27 08:44:22 [notice] 1#1: built by gcc 15.2.0 (Alpine 15.2.0) 
+stderr F 2026/11/27 08:44:22 [notice] 1#1: OS: Linux 6.6.159.1-2.azl3
+stderr F 2026/11/27 08:44:22 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+stderr F 2026/11/27 08:44:22 [notice] 1#1: start worker processes
+stderr F 2026/11/27 08:44:22 [notice] 1#1: start worker process 36
+stderr F 2026/11/27 08:44:22 [notice] 1#1: start worker process 37
+stderr F 2026/11/27 08:44:22 [notice] 1#1: start worker process 38
+stderr F 2026/11/27 08:44:22 [notice] 1#1: start worker process 39
+stdout F x.x.x.x - - [27/Nov/2026:08:44:59 +0000] "GET / HTTP/1.1" 200 384 "-" "curl/8.18.0" "x.x.x.x"
+stdout F x.x.x.x - - [27/Nov/2026:08:44:59 +0000] "GET /health HTTP/1.1" 200 15 "-" "curl/8.18.0" "x.x.x.x"
+stdout F x.x.x.x - - [27/Nov/2026:08:45:07 +0000] "GET /health HTTP/1.1" 200 15 "-" "curl/8.18.0" "x.x.x.x"
+stdout F x.x.x.x - - [27/Nov/2026:08:45:07 +0000] "GET / HTTP/1.1" 200 384 "-" "curl/8.18.0" "x.x.x.x"
+stdout F x.x.x.x - - [27/Nov/2026:08:45:53 +0000] "GET / HTTP/1.1" 200 384 "-" "python-requests/2.33.1" "x.x.x.x"
