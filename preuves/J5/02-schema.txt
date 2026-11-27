@@ -1,0 +1,19 @@
+$ ./scripts/db-init.sh (première exécution)
+Création du schéma (database/init.sql)
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+
+$ ./scripts/db-init.sh (seconde exécution : idempotent)
+Le schéma existe déjà, rien à créer.
+
+              List of relations
+ Schema |     Name     | Type  |    Owner     
+--------+--------------+-------+--------------
+ public | answers      | table | neondb_owner
+ public | quiz_results | table | neondb_owner
+ public | users        | table | neondb_owner
+(3 rows)
+

@@ -1,0 +1,13 @@
+# Fichiers exclus du contexte de build du frontend.
+# Evite d'envoyer des secrets et du poids inutile au démon Docker.
+.git
+.env
+.env.*
+!.env.example
+node_modules
+dist
+backend
+database
+docs
+history-commands
+*.md

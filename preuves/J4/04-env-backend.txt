@@ -1,0 +1,9 @@
+Nom             Valeur                          Secret
+--------------  ------------------------------  --------------
+PORT            3007
+DATABASE_URL                                    database-url
+RESEND_API_KEY                                  resend-api-key
+ADMIN_PASSWORD                                  admin-password
+JWT_SECRET                                      jwt-secret
+ADMIN_USERNAME  admin
+FROM_EMAIL      Quiz App <noreply@example.com>

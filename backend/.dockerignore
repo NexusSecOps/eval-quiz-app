@@ -1,0 +1,4 @@
+# Fichiers exclus du contexte de build du backend.
+node_modules
+.env
+.env.*
