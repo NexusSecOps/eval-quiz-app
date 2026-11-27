@@ -12,6 +12,8 @@ Date des preuves : 27 novembre 2026. Aucun secret dans ces fichiers : les valeur
 | Backend non exposé | Fait | Ingress interne, port cible 3007 : `01-health.txt`, l'URL interne depuis Internet renvoie la page « Unavailable » de l'ingress |
 | Révisions | Fait | `02-revisions.txt` : une révision active par app, 100 % du trafic, état `Running` |
 | `GET /health` | Fait | `01-health.txt` : HTTP 200 et `{"status":"ok"}`, via le frontend puis Nginx puis le backend |
+| Configuration réseau | Fait | `06-reseau.txt` : environnement sans VNet, FQDN, ingress externe/interne, ports, variables `BACKEND_HOST` et `BACKEND_PORT` |
+| Images et droits dans ACR | Fait | `07-acr-images.txt` : tags et digests, rôle `AcrPull` seul, compte admin désactivé |
 | Logs | Fait | `05-logs.txt` |
 | Secrets | Fait | `04-env-backend.txt` : `DATABASE_URL`, `RESEND_API_KEY`, `ADMIN_PASSWORD`, `JWT_SECRET` en `secretref` |
 
