@@ -1,0 +1,29 @@
+# Premier run du CD sur main : échec de la connexion OIDC (étape « Connexion à Azure »)
+
+Federated token details:
+ issuer - https://token.actions.githubusercontent.com
+ subject claim - repo:NexusSecOps@361464339/eval-quiz-app@1472868932:ref:refs/heads/main
+ audience - api://AzureADTokenExchange
+ job_workflow_ref - NexusSecOps/eval-quiz-app/.github/workflows/cd.yml@refs/heads/main
+Error: AADSTS700213: No matching federated identity record found for presented assertion subject
+'repo:NexusSecOps@361464339/eval-quiz-app@1472868932:ref:refs/heads/main'.
+Check your federated identity credential Subject, Audience and Issuer against the presented assertion.
+(Trace ID et Correlation ID retirés)
+
+# Diagnostic : le réglage OIDC du dépôt
+
+$ gh api repos/NexusSecOps/eval-quiz-app/actions/oidc/customization/sub
+{"use_default":true,"use_immutable_subject":true,"sub_claim_prefix":"repo:NexusSecOps@361464339/eval-quiz-app@1472868932"}
+
+# Identifiant fédéré attendu par Azure avant correction (nom seul, sans identifiants numériques)
+repo:NexusSecOps/eval-quiz-app:ref:refs/heads/main
+
+# Correction : ajout d'un identifiant fédéré avec le sujet exact présenté par GitHub
+
+$ az identity federated-credential create --name github-main-immutable --identity-name id-quiz-github-cd \
+    --resource-group rg-quiz-app --issuer https://token.actions.githubusercontent.com \
+    --subject "repo:NexusSecOps@361464339/eval-quiz-app@1472868932:ref:refs/heads/main" \
+    --audiences api://AzureADTokenExchange
+
+$ gh run rerun 45984555456 --failed
+=> run en succès, voir 02-run-cd.txt

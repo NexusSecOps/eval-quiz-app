@@ -1,0 +1,26 @@
+# Run du CD sur main : https://github.com/NexusSecOps/eval-quiz-app/actions/runs/45984555456 (commit b8ca8b3)
+
+== Connexion à Azure (OIDC, aucun mot de passe)
+   issuer - https://token.actions.githubusercontent.com
+   subject claim - repo:NexusSecOps@361464339/eval-quiz-app@1472868932:ref:refs/heads/main
+   audience - api://AzureADTokenExchange
+   job_workflow_ref - NexusSecOps/eval-quiz-app/.github/workflows/cd.yml@refs/heads/main
+  Subscription is set successfully.
+  Azure CLI login succeeds by using OIDC.
+
+== Mise à jour des Container Apps : nouvelles révisions
+  Mise à jour de quiz-backend vers quiz-backend:b8ca8b3
+  Mise à jour de quiz-frontend vers quiz-frontend:b8ca8b3
+  Révisions de quiz-backend :
+  Revision                   Active    Image                                            Etat     Creation
+  -------------------------  --------  -----------------------------------------------  -------  -------------------------
+  quiz-backend--r1127104217  True      acrquiznexusdev.azurecr.io/quiz-backend:ccfe726  Running  2026-11-27T09:42:26+00:00
+  quiz-backend--0000001      True      acrquiznexusdev.azurecr.io/quiz-backend:b8ca8b3  Running  2026-11-27T10:48:45+00:00
+  Révisions de quiz-frontend :
+  Revision                Active    Image                                             Etat        Creation
+  ----------------------  --------  ------------------------------------------------  ----------  -------------------------
+  quiz-frontend--h7iwahl  True      acrquiznexusdev.azurecr.io/quiz-frontend:ccfe726  Running     2026-11-27T08:44:10+00:00
+  quiz-frontend--0000001  True      acrquiznexusdev.azurecr.io/quiz-frontend:b8ca8b3  Activating  2026-11-27T10:49:00+00:00
+
+== Test de santé après déploiement
+  Test de santé réussi, essai 1

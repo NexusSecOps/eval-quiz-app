@@ -1,0 +1,25 @@
+# Après le CD : images dans l'ACR et révisions actives (az, 2026-11-27)
+
+== Tags dans l'ACR (le tag est le hash court du commit fusionné dans main)
+-- quiz-frontend
+Tag      Digest                                                                   Date
+-------  -----------------------------------------------------------------------  ----------------------------
+b8ca8b3  sha256:ca59a64a3acb1b38cb29e76fa44d380cf527373d6eebd4c795830cab9969822f  2026-11-27T10:48:10.2710892Z
+ccfe726  sha256:21396c9fd0c226a35380dbc64bfa009d4417bd46d994e7345454986d9f59f7a8  2026-11-27T08:13:00.545634Z
+-- quiz-backend
+Tag      Digest                                                                   Date
+-------  -----------------------------------------------------------------------  ----------------------------
+b8ca8b3  sha256:cf20cc796ae6e4ce528c0cb37a21df75c83c6f5cfa56931f4a1681a184b19fad  2026-11-27T10:48:13.9618921Z
+ccfe726  sha256:bb981e0226fc6da2be6c0a898bc94b41f54ecfe7090f940063f5a53454de2e5e  2026-11-27T08:13:05.3374396Z
+
+== Révisions : la plus récente porte 100 % du trafic
+App           Revision               Etat     Trafic    Image
+------------  ---------------------  -------  --------  -----------------------------------------------
+quiz-backend  quiz-backend--0000001  Running  100       acrquiznexusdev.azurecr.io/quiz-backend:b8ca8b3
+App            Revision                Etat     Trafic    Image
+-------------  ----------------------  -------  --------  ------------------------------------------------
+quiz-frontend  quiz-frontend--0000001  Running  100       acrquiznexusdev.azurecr.io/quiz-frontend:b8ca8b3
+
+$ curl -i https://<frontend>/health
+HTTP/2 200 
+{"status":"ok"}
