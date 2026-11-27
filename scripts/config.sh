@@ -34,6 +34,11 @@ IMAGE_TAG="${IMAGE_TAG:-$(git rev-parse --short HEAD)}"
 # J4 : environnement et applications Azure Container Apps.
 # L'environnement est le réseau et le domaine partagés par les deux applications.
 CONTAINERAPPS_ENV="${CONTAINERAPPS_ENV:-cae-quiz-app}"
+# Région de l'environnement, distincte de celle de l'ACR. Constaté avec az : l'abonnement est limité à
+# 1 environnement, et germanywestcentral refuse d'en créer un en mode WorkloadProfiles
+# (MaxNumberOfEnvironmentsInSubExceeded), alors que switzerlandnorth, région autorisée, l'accepte.
+# Les images sont tirées depuis l'ACR d'une autre région : cela fonctionne, avec un peu de latence au tirage.
+ENV_LOCATION="${ENV_LOCATION:-switzerlandnorth}"
 FRONTEND_APP="${FRONTEND_APP:-quiz-frontend}"
 # Le nom de l'app backend sert de nom DNS interne : le frontend l'appelle via BACKEND_HOST.
 BACKEND_APP="${BACKEND_APP:-quiz-backend}"

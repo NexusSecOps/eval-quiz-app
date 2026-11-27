@@ -1,0 +1,4 @@
+App           Revision               Actif    Etat     Trafic    Creee
+------------  ---------------------  -------  -------  --------  -------------------------
+quiz-backend  quiz-backend--jll686j  True     Running  100       2026-11-27T08:43:09+00:00
+quiz-frontend  quiz-frontend--h7iwahl  True     Running  100       2026-11-27T08:44:10+00:00

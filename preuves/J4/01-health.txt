@@ -1,0 +1,16 @@
+$ curl -i FRONTEND/health
+HTTP/2 200 
+server: nginx/1.31.10
+content-type: application/json; charset=utf-8
+content-length: 15
+x-powered-by: Express
+access-control-allow-origin: *
+
+{"status":"ok"}
+
+$ curl -i FRONTEND/ (code seul)
+200
+
+$ curl -i BACKEND_INTERNE/health   # depuis Internet, hors de l'environnement
+HTTP/2 404 
+    <title>Azure Container App - Unavailable</title>

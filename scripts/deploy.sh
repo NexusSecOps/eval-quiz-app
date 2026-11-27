@@ -51,6 +51,8 @@ done
 
 # Environnement Container Apps : réseau et domaine partagés par les deux applications.
 # Il crée aussi un espace Log Analytics pour les logs des conteneurs.
+# Mode WorkloadProfiles (profil Consumption, facturation à l'usage) : sans cet argument, l'extension
+# preview crée un environnement "Express", qui refuse allow-insecure et n'est pas le modèle attendu.
 if az containerapp env show --name "${CONTAINERAPPS_ENV}" --resource-group "${RESOURCE_GROUP}" --output none 2>/dev/null; then
   echo "L'environnement ${CONTAINERAPPS_ENV} existe déjà."
 else
@@ -58,7 +60,8 @@ else
   az containerapp env create \
     --name "${CONTAINERAPPS_ENV}" \
     --resource-group "${RESOURCE_GROUP}" \
-    --location "${LOCATION}" \
+    --location "${ENV_LOCATION}" \
+    --environment-mode WorkloadProfiles \
     --tags projet=quiz-app \
     --output none
 fi
@@ -68,12 +71,13 @@ fi
 if ! az identity show --name "${IDENTITY_NAME}" --resource-group "${RESOURCE_GROUP}" --output none 2>/dev/null; then
   echo "Création de l'identité ${IDENTITY_NAME}"
   az identity create --name "${IDENTITY_NAME}" --resource-group "${RESOURCE_GROUP}" \
-    --location "${LOCATION}" --tags projet=quiz-app --output none
+    --location "${ENV_LOCATION}" --tags projet=quiz-app --output none
 fi
 IDENTITY_ID="$(az identity show --name "${IDENTITY_NAME}" --resource-group "${RESOURCE_GROUP}" --query id --output tsv)"
 IDENTITY_PRINCIPAL="$(az identity show --name "${IDENTITY_NAME}" --resource-group "${RESOURCE_GROUP}" --query principalId --output tsv)"
 
-if [ -z "$(az role assignment list --assignee "${IDENTITY_PRINCIPAL}" --scope "${ACR_ID}" --role AcrPull --query '[0].id' --output tsv)" ]; then
+if [ -z "$(az role assignment list --scope "${ACR_ID}" --role AcrPull \
+  --query "[?principalId=='${IDENTITY_PRINCIPAL}'] | [0].id" --output tsv)" ]; then
   echo "Attribution du rôle AcrPull à ${IDENTITY_NAME} sur ${ACR_NAME}"
   az role assignment create \
     --assignee-object-id "${IDENTITY_PRINCIPAL}" \
