@@ -12,7 +12,7 @@
 | **J2** | Sécurité des images : scan Trivy initial, corrections, second scan | Nicolas | Elyes | Rapport avant/après, commandes, vulnérabilités résiduelles justifiées | J1 | Fait |
 | **J3** | Azure CLI et ACR : groupe de ressources, registre, push d'images taguées | Elyes | Nicolas | Scripts, sorties non sensibles, images et tags dans l'ACR | J0, J1 | Fait |
 | **J4** | Frontend et backend sur Azure Container Apps (ingress, réseau, révisions, `/health`). Le backend exige `RESEND_API_KEY` au démarrage, même factice | Elyes | Nicolas | Config, logs et état des révisions, test `/health` (code HTTP + réponse) ou diagnostic | J3 | Fait |
-| **J5** | PostgreSQL cloud (Neon) : TLS via l'URL de connexion, schéma `init.sql`, inscription et résultat, persistance | Elyes (suggéré : préparable sans images pendant l'attente de J1) | Nicolas | Démo, logs non sensibles, gestion des secrets | J4 | À faire |
+| **J5** | PostgreSQL cloud (Neon) : TLS via l'URL de connexion, schéma `init.sql`, inscription et résultat, persistance | Elyes (suggéré : préparable sans images pendant l'attente de J1) | Nicolas | Démo, logs non sensibles, gestion des secrets | J4 | Fait |
 | **J6-A** | CI sur Pull Request : build, Trivy bloquant sur CRITICAL, protection de `main`, approbation | Nicolas | Elyes | URL de PR, runs CI, rapports Trivy, règle de protection active | J1, J2 | Fait |
 | **J6-B** | CD après fusion dans `main` : push ACR (tag = commit) et mise à jour des Container Apps | Elyes | Nicolas | Runs de déploiement, digests/tags, nouvelles révisions Azure | J3, J4, J6-A | À faire |
 

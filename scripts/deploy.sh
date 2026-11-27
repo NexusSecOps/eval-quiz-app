@@ -12,12 +12,8 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 source scripts/config.sh
 
-# Fichier local de secrets, facultatif. "set -a" exporte tout ce qu'il définit.
-if [ -f .env.azure ]; then
-  set -a
-  source .env.azure
-  set +a
-fi
+# Fichier local de secrets, facultatif (fonction définie dans config.sh).
+charger_secrets
 
 # Les secrets ne sont jamais écrits dans ce script : on refuse de démarrer s'il en manque.
 for VAR in RESEND_API_KEY ADMIN_PASSWORD JWT_SECRET; do
@@ -113,8 +109,11 @@ if az containerapp show --name "${BACKEND_APP}" --resource-group "${RESOURCE_GRO
   echo "Mise à jour de ${BACKEND_APP} avec ${IMAGE_TAG}"
   az containerapp secret set --name "${BACKEND_APP}" --resource-group "${RESOURCE_GROUP}" \
     --secrets "${BACKEND_SECRETS[@]}" --output none
+  # Changer un secret ne crée pas de révision : l'ancienne valeur resterait en mémoire dans le conteneur.
+  # Un suffixe de révision unique (date et heure) force une nouvelle révision, donc un redémarrage avec les secrets à jour.
   az containerapp update --name "${BACKEND_APP}" --resource-group "${RESOURCE_GROUP}" \
-    --image "${BACKEND_IMAGE_REF}" --set-env-vars "${BACKEND_ENV[@]}" --output none
+    --image "${BACKEND_IMAGE_REF}" --set-env-vars "${BACKEND_ENV[@]}" \
+    --revision-suffix "r$(date +%m%d%H%M%S)" --output none
 else
   echo "Création de ${BACKEND_APP}"
   az containerapp create \

@@ -42,3 +42,22 @@ ENV_LOCATION="${ENV_LOCATION:-switzerlandnorth}"
 FRONTEND_APP="${FRONTEND_APP:-quiz-frontend}"
 # Le nom de l'app backend sert de nom DNS interne : le frontend l'appelle via BACKEND_HOST.
 BACKEND_APP="${BACKEND_APP:-quiz-backend}"
+
+# Chargement du fichier de secrets local (.env.azure, ignoré par Git).
+# Lecture ligne par ligne sans "source" : le shell n'interprète pas le contenu. Avec "source", une URL de
+# connexion contenant "&" (ex. Neon : ...?sslmode=require&channel_binding=require) lancerait une commande
+# en arrière-plan et la variable resterait vide. Les guillemets autour de la valeur sont facultatifs.
+charger_secrets() {
+  local fichier="${1:-.env.azure}" ligne cle valeur
+  [ -f "${fichier}" ] || return 0
+  while IFS= read -r ligne || [ -n "${ligne}" ]; do
+    case "${ligne}" in ''|'#'*) continue ;; esac
+    cle="${ligne%%=*}"
+    valeur="${ligne#*=}"
+    case "${valeur}" in
+      \"*\") valeur="${valeur#\"}"; valeur="${valeur%\"}" ;;
+      \'*\') valeur="${valeur#\'}"; valeur="${valeur%\'}" ;;
+    esac
+    export "${cle}=${valeur}"
+  done < "${fichier}"
+}
