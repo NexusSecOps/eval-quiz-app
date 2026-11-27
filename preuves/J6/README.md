@@ -11,9 +11,9 @@ Date des preuves : 26 novembre 2026. Dépôt : https://github.com/NexusSecOps/ev
 | Scan Trivy bloquant sur CRITICAL | Démontré | PR 6, capture 01 |
 | Contrôle réussi sur une PR saine | Fait | PR 5, run en succès |
 | Checks obligatoires avant fusion | Fait | Ruleset actif, PR 6 bloquée, capture 02 |
-| Revue et approbation obligatoires | Configuré | Capture 02 : « Review required ». Une PR approuvée reste à montrer. |
+| Revue et approbation obligatoires | Fait | Capture 02 : « Review required » bloque la PR 6. PR 7 : approuvée par `ERM-ops` (27 novembre 2026, 09:14 UTC), puis fusionnée. |
 
-La protection de `Dev` et `main` est active depuis le 26 novembre 2026 : voir la section « Protection des branches ». Les PR 5 et 6 ont été ouvertes avant ou pendant sa mise en place, la PR 5 a donc été fusionnée sans approbation.
+La protection de `Dev` et `main` est active depuis le 26 novembre 2026 : voir la section « Protection des branches ». Les PR 5 et 6 ont été ouvertes avant ou pendant sa mise en place, la PR 5 a donc été fusionnée sans approbation. La PR 7, ouverte après, a suivi le circuit complet.
 
 ## Fonctionnement
 
@@ -151,7 +151,14 @@ La PR 5 (`J6-A : CI sur Pull Request`) a passé les deux checks, `Build et test`
 - PR : https://github.com/NexusSecOps/eval-quiz-app/pull/5
 - Run : https://github.com/NexusSecOps/eval-quiz-app/actions/runs/45846084821
 
-Cette PR a été fusionnée avant l'activation de la protection : elle ne comporte donc pas d'approbation. Une PR saine, approuvée par l'autre membre, sera ajoutée une fois la protection active.
+Cette PR a été fusionnée avant l'activation de la protection : elle ne comporte donc pas d'approbation.
+
+Avec la protection active, la PR 7 (`J4 : frontend et backend sur Azure Container Apps`) a suivi le circuit complet :
+
+- PR : https://github.com/NexusSecOps/eval-quiz-app/pull/7
+- Run : https://github.com/NexusSecOps/eval-quiz-app/actions/runs/45970668454, `Build et test` et `Scan Trivy` en succès.
+- Revue : approuvée par `ERM-ops`, un autre membre que l'auteur de la PR (`skyx95100-pixel`), avant la fusion dans `Dev`.
+- Tant qu'aucune approbation n'existait, la fusion était bloquée (`mergeStateStatus: BLOCKED`, `reviewDecision: REVIEW_REQUIRED`), checks verts compris.
 
 ## Reste à produire
 
@@ -159,6 +166,6 @@ Cette PR a été fusionnée avant l'activation de la protection : elle ne compor
 - [x] Activer la protection de `Dev` et `main` : voir « Protection des branches ».
 - [x] Capture 02 : fusion bloquée sur une PR dont le scan échoue.
 - [x] Rapport Trivy de l'artefact, avec les 3 CRITICAL : fichiers dans `rapports-trivy/`.
-- [ ] Capture 04 : PR saine avec les deux checks verts et l'approbation.
+- [ ] Capture 04 : PR 7 avec les deux checks verts et l'approbation (à prendre depuis la page de la PR).
 - [x] Capture 05 : règle de protection active dans les paramètres du dépôt.
 - [x] Capture 06 : push direct refusé sur `Dev`.
